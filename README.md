@@ -246,18 +246,6 @@ After deployment, Terraform displays:
 - CloudWatch dashboard name
 - CloudWatch dashboard URL
 
-## Cleanup
-
-After the live demonstration and grading are complete, remove the AWS resources with:
-
-```powershell
-terraform destroy
-```
-
-Type `yes` when prompted.
-
-Do not run `terraform destroy` before the presentation because it deletes the deployed Lambda, scheduler, database, notifications, secret, logs, alarm, and dashboard.
-
 ## Security Notes
 
 The repository must not contain:
