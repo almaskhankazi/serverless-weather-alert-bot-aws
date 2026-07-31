@@ -2,12 +2,12 @@
 
 ```mermaid
 flowchart TD
-    A["EventBridge<br/>(every 1 hour)"] --> B["AWS Lambda<br/>(Python)"]
-    B --> C["Open-Meteo API"]
-    B --> D["DynamoDB<br/>(store weather data)"]
-    B --> E["Secrets Manager<br/>(threshold check)"]
-    E --> F["Amazon SNS<br/>(email alert)"]
-    B --> G["CloudWatch<br/>(logs and alarm)"]
+    A["EventBridge Scheduler<br/>(every 1 hour)"] --> B["AWS Lambda<br/>(Python 3.12)"]
+    B --> C["Open-Meteo API<br/>(fetch weather data)"]
+    B --> D["DynamoDB<br/>(store weather records)"]
+    B --> E["Secrets Manager<br/>(read threshold)"]
+    B -->|If threshold exceeded| F["Amazon SNS<br/>(send email alert)"]
+    B --> G["CloudWatch<br/>(logs, alarm and dashboard)"]
 ```
 
 ## Three Decision Table
@@ -15,13 +15,13 @@ flowchart TD
 | Decision | What We Chose | What We Rejected | Pillar | Justification |
 |---|---|---|---|---|
 | Database | DynamoDB on-demand | RDS PostgreSQL | Cost | RDS wins on ad-hoc SQL queries but incurs idle instance cost; DynamoDB pay-per-request fits the $100 Learner Lab budget. |
-| Compute | AWS Lambda | EC2 / ECS | Cost + Operational Excellence | No server patching and no idle EC2 cost; the Lambda free tier covers our load. |
-| API | Open-Meteo | OpenWeatherMap | Cost | OpenWeatherMap requires an API key and has a rate-limited free tier; Open-Meteo is 100% free with no signup. |
+| Compute | AWS Lambda | EC2 / ECS | Cost + Operational Excellence | Pay-per-use execution, no idle server cost, and no operating-system patching make Lambda suitable for this low-volume hourly workload. |
+| API | Open-Meteo | OpenWeatherMap | Cost | No API key or signup is required for the non-commercial free tier, and its 10,000 daily-call limit is more than sufficient for an hourly capstone workload. |
 
 ## Architecture Review Findings
 
 | Finding | Accept / Push Back | One-line Response |
 |---|---|---|
-| No retry logic if Open-Meteo fails | Accept | Valid — API downtime would drop a data point with no recovery. |
+| Open-Meteo remains an external dependency | Accept | Lambda retries failed API requests up to three times, but prolonged API downtime could still prevent a weather record from being created. |
 | SNS email is best-effort, not guaranteed delivery | Push back | Acceptable for the capstone demonstration; SNS email is sufficient for demonstration. |
 | Secrets Manager is overkill for a single integer threshold | Push back | Using Lambda environment variables would require redeployment to change the threshold; Secrets Manager allows runtime updates. |
