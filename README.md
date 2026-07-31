@@ -252,17 +252,3 @@ To delete all resources created by this project, run:
 
 ```powershell
 terraform destroy
-
-## Security Notes
-
-The repository must not contain:
-
-- AWS access keys
-- AWS secret keys
-- AWS session tokens
-- `.env` files
-- Terraform state files
-- saved Terraform plans
-- generated Lambda ZIP files
-
-These files are excluded through `.gitignore`.
