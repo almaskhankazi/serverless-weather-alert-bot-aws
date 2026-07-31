@@ -246,6 +246,13 @@ After deployment, Terraform displays:
 - CloudWatch dashboard name
 - CloudWatch dashboard URL
 
+## Remove AWS Resources
+
+To delete all resources created by this project, run:
+
+```powershell
+terraform destroy
+
 ## Security Notes
 
 The repository must not contain:
